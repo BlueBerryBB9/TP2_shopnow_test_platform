@@ -2,10 +2,8 @@
 
 ## Informations
 
-- **Nom :** À compléter
-- **Groupe :** À compléter
-- **URL du fork :** À compléter
-- **Projet :** ShopNow - plateforme de tests logiciels
+- **Nom :** Leroy Martin
+- **URL :** https://github.com/BlueBerryBB9/TP2_shopnow_test_platform
 
 ## Tests ajoutés
 
