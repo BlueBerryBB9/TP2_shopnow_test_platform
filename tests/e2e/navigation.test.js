@@ -1,4 +1,4 @@
-const { Builder, By, until } = require('selenium-webdriver');
+const { Builder, By, Browser, until } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
 const { expect } = require('chai');
 
@@ -8,16 +8,7 @@ describe('E2E - navigation ShopNow', function () {
     let driver;
 
     before(async function () {
-        const options = new firefox.Options();
-
-        options.setBinary(
-            'C:\\Program Files\\Mozilla Firefox\\firefox.exe'
-        );
-
-        driver = await new Builder()
-            .forBrowser('firefox')
-            .setFirefoxOptions(options)
-            .build();
+        driver = await new Builder().forBrowser(Browser.CHROME).build();
     });
 
     after(async function () {

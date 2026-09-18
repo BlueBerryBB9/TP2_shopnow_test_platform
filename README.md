@@ -98,3 +98,9 @@ Configurer un pipeline qui :
 
 ## 7. Challenge final
 Atteindre une couverture de tests significative sans modifier artificiellement le code uniquement pour faire monter le pourcentage. Chaque test doit vérifier un comportement utile.
+
+## 8. MDP SonarQube
+
+admin -> admin
+
+sonarqube-token : squ_fd93aa11ed80900527e84f06627e66f63bf558b1
