@@ -168,3 +168,30 @@ set this as sonarqube host in jenkins : http://sonarqube:9000
 
 ## Réponse aux questions
 
+Quelle est la différence entre :
+
+test unitaire : test d'une fonction précise ou de logique du code individuelle.
+test d'intégration : test de plusieurs composant de l'application ensemble, ou les routes pour une api par exemple.
+test E2E : test du parcours utilisateur complet, du début à la fin, en reproduisant fidèlement les actions effectuables par l'utilisateur.
+
+Pourquoi un test avec une couverture de 100 % peut-il malgré tout être insuffisant ?
+Car des cas précis de logique du code ou d'un enchaînement d'action particulière peut être à l'origine d'un comportement peu anticipable.
+
+Pourquoi faut-il tester les cas d'erreur ?
+Car les erreurs doivent être des comportements prévus et gérés par le code, ils doivent donc être anticipable et testé pour éviter la régression.
+
+Pourquoi utiliser data-testid pour les tests Selenium ?
+Car ils permettent de pointé des éléments de l'interface web plus facilement et de rendre les tests plus lisibles et logiques et non changeant.
+
+Pourquoi faut-il éviter les sleep() systématiques dans les tests E2E ?
+Car ils ralentissent de manière considérable et arbitraire l'éxécution des tests, 
+alors qu'il existe des waits, pour attendre l'apparition de l'élément suivant qu'on veut tester, cela fluidifie le test. 
+
+Quel est le rôle de Jenkins ?
+Jenkins permet d'utiliser une pipeline, càd une suite d'action, de "stages", qui permettent dans notre cas d'automatiser le build, les tests et le déploiement.
+
+Quel est le rôle de SonarQube ?
+Son rôle est de pouvoir effectuer des tests de couverture des tests sur du code source, d'analyser les vulnérabilités du code et de sécurité et par conséquent permet l'amélioration continue.
+
+Quelle est la différence entre couverture et qualité du code ?
+La couverture regarde seulement si les tests permettent de tester toutes les lignes du code, alors que la qualité du code montre les vulnérabilités du code et les choses à amélioré, notamment la sécurité applicative.
