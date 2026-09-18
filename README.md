@@ -114,14 +114,57 @@ Configurer un pipeline qui :
 5. lance l'analyse SonarQube,
 6. publie le résultat du pipeline.
 
-## 7. Challenge final
+## 7. Preuve des tests et de la régression
+
+La suite couvre les tests unitaires, les tests d'intégration API et les tests E2E avec Chrome.
+
+### Détection d'une régression
+
+Pour vérifier que les tests détectent réellement une erreur, le prix du produit `Laptop Pro 14"` a été temporairement modifié de `1299.99` à `40` dans `app/src/server.js`.
+
+Commande exécutée :
+
+```bash
+npx mocha "tests/integration/application.test.js" --grep "produit demandé" --timeout 10000
+```
+
+Résultat observé :
+
+```text
+0 passing
+1 failing
+expected price 1299.99, but got 40
+```
+
+Le test a donc correctement détecté la régression. Le prix a ensuite été restauré à `1299.99`.
+
+### Validation finale
+
+Commande exécutée après restauration :
+
+```bash
+npm test
+```
+
+Résultat observé :
+
+```text
+37 passing
+```
+
+La validation finale inclut les tests unitaires, les tests d'intégration API et les deux scénarios E2E Chrome.
+
+## 8. Challenge final
 
 Atteindre une couverture de tests significative sans modifier artificiellement le code uniquement pour faire monter le pourcentage. Chaque test doit vérifier un comportement utile.
 
-## 8. MDP SonarQube
+## 9. MDP SonarQube
 
 sonarqube : admin -> admins
 
 sonarqube-token : squ_fd93aa11ed80900527e84f06627e66f63bf558b1
 
 set this as sonarqube host in jenkins : http://sonarqube:9000
+
+## Réponse aux questions
+

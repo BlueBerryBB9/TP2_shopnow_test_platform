@@ -87,12 +87,10 @@ app.post("/api/register", (req, res) => {
       .json({ error: "Un compte existe déjà avec cet email" });
   const u = { id: users.length + 1, firstName, lastName, email, password };
   users.push(u);
-  res
-    .status(201)
-    .json({
-      message: "Compte créé avec succès",
-      user: { id: u.id, firstName, lastName, email },
-    });
+  res.status(201).json({
+    message: "Compte créé avec succès",
+    user: { id: u.id, firstName, lastName, email },
+  });
 });
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;

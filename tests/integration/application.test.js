@@ -3,6 +3,52 @@ const { expect } = require("chai");
 const app = require("../../app/src/server");
 
 describe("ShopNow - tests d’intégration API", () => {
+  describe("Défi supplémentaire - tests négatifs", () => {
+    it("refuse un identifiant produit égal à zéro", async () => {
+      // Entrée : GET /api/products/0
+      // Attendu : le produit est considéré comme inexistant.
+      const response = await request(app).get("/api/products/0");
+
+      // Observé : l’API retourne 404 avec un message d’erreur explicite.
+      expect(response.status).to.equal(404);
+      expect(response.body).to.have.property("error", "Produit introuvable");
+    });
+
+    it("refuse une connexion avec un email inconnu", async () => {
+      // Entrée : email absent de la base, avec un mot de passe quelconque.
+      const response = await request(app).post("/api/login").send({
+        email: "utilisateur-inconnu@shopnow.test",
+        password: "Password123!",
+      });
+
+      // Attendu et observé : aucune session n’est créée et l’API retourne 401.
+      expect(response.status).to.equal(401);
+      expect(response.body).to.have.property(
+        "error",
+        "Email ou mot de passe incorrect",
+      );
+    });
+
+    it("refuse une inscription avec une donnée incorrecte", async () => {
+      // Entrée : mot de passe de 7 caractères au lieu de 8 minimum.
+      const response = await request(app)
+        .post("/api/register")
+        .send({
+          firstName: "Negative",
+          lastName: "Test",
+          email: `negative-${Date.now()}@shopnow.test`,
+          password: "1234567",
+        });
+
+      // Attendu et observé : l’inscription est refusée avec le code 400.
+      expect(response.status).to.equal(400);
+      expect(response.body).to.have.property(
+        "error",
+        "Le mot de passe doit contenir au moins 8 caractères",
+      );
+    });
+  });
+
   describe("GET /api/health", () => {
     it("retourne 200 et le statut de santé de l’application", async () => {
       const response = await request(app).get("/api/health");
@@ -92,6 +138,23 @@ describe("ShopNow - tests d’intégration API", () => {
       );
     });
 
+    it("retourne 400 lorsqu’un champ obligatoire est vide", async () => {
+      const response = await request(app)
+        .post("/api/register")
+        .send({
+          firstName: "",
+          lastName: "Test",
+          email: `empty-${Date.now()}@shopnow.test`,
+          password: "Password123!",
+        });
+
+      expect(response.status).to.equal(400);
+      expect(response.body).to.have.property(
+        "error",
+        "Tous les champs sont obligatoires",
+      );
+    });
+
     it("retourne 400 lorsque le mot de passe est trop court", async () => {
       const response = await request(app)
         .post("/api/register")
@@ -106,6 +169,24 @@ describe("ShopNow - tests d’intégration API", () => {
       expect(response.body).to.have.property(
         "error",
         "Le mot de passe doit contenir au moins 8 caractères",
+      );
+    });
+
+    it("retourne 409 lorsqu’un email est déjà utilisé", async () => {
+      const user = {
+        firstName: "Existing",
+        lastName: "User",
+        email: `duplicate-${Date.now()}@shopnow.test`,
+        password: "Password123!",
+      };
+      await request(app).post("/api/register").send(user);
+
+      const response = await request(app).post("/api/register").send(user);
+
+      expect(response.status).to.equal(409);
+      expect(response.body).to.have.property(
+        "error",
+        "Un compte existe déjà avec cet email",
       );
     });
   });
@@ -155,6 +236,13 @@ describe("ShopNow - tests d’intégration API", () => {
       const response = await request(app).get("/api/route-inexistante");
 
       expect(response.status).to.equal(404);
+    });
+
+    it("retourne la page d’accueil pour une route web inconnue", async () => {
+      const response = await request(app).get("/page-inconnue");
+
+      expect(response.status).to.equal(200);
+      expect(response.text).to.include("ShopNow");
     });
   });
 });

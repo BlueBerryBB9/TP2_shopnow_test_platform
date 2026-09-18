@@ -96,6 +96,17 @@ describe("Frontend - fonctions logiques ShopNow", () => {
     ]);
   });
 
+  it("redirige vers la connexion si un visiteur ajoute un produit", () => {
+    const { ShopNow, context } = createFrontend();
+
+    ShopNow.addToCart({ id: 10, name: "Produit", price: 12.5 });
+
+    expect(context.location.href).to.equal(
+      "/login.html?redirect=%2Fproducts.html",
+    );
+    expect(ShopNow.getCart()).to.deep.equal([]);
+  });
+
   it("augmente la quantité au lieu de dupliquer un produit", () => {
     const { ShopNow } = createFrontend();
     ShopNow.setUser({ id: 1 });

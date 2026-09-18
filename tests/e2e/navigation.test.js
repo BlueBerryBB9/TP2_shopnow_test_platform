@@ -109,4 +109,35 @@ describe("E2E - navigation ShopNow", function () {
       "Parcours E2E réussi : connexion, produit, panier, quantité, total et suppression.",
     );
   });
+
+  it("doit refuser une connexion avec un mauvais mot de passe", async function () {
+    await driver.get("http://localhost:8081/login.html");
+    await driver.executeScript("window.localStorage.clear();");
+
+    const loginForm = await driver.wait(
+      until.elementLocated(By.css('[data-testid="login-form"]')),
+      10000,
+    );
+    expect(await loginForm.isDisplayed()).to.equal(true);
+
+    const password = await driver.findElement(
+      By.css('[data-testid="login-password"]'),
+    );
+    await password.clear();
+    await password.sendKeys("mauvais-mot-de-passe");
+    await driver.findElement(By.css('[data-testid="login-submit"]')).click();
+
+    const message = await driver.wait(
+      until.elementLocated(By.css('[data-testid="login-message"]')),
+      10000,
+    );
+    await driver.wait(
+      until.elementTextIs(message, "Email ou mot de passe incorrect"),
+      10000,
+    );
+
+    expect(await message.getText()).to.equal("Email ou mot de passe incorrect");
+    expect(await driver.getCurrentUrl()).to.include("login.html");
+    console.log("Scénario E2E négatif réussi : connexion refusée.");
+  });
 });
