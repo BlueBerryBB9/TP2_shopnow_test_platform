@@ -1,0 +1,12 @@
+{
+  "name": "shopnow-app",
+  "version": "2.0.0",
+  "private": true,
+  "description": "ShopNow - application e-commerce pédagogique",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
