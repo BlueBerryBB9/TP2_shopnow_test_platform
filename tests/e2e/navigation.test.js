@@ -1,68 +1,112 @@
-const { Builder, By, Browser, until } = require('selenium-webdriver');
-const firefox = require('selenium-webdriver/firefox');
-const { expect } = require('chai');
+const { Builder, By, Browser, until } = require("selenium-webdriver");
+const firefox = require("selenium-webdriver/firefox");
+const { expect } = require("chai");
 
-describe('E2E - navigation ShopNow', function () {
-    this.timeout(30000);
+describe("E2E - navigation ShopNow", function () {
+  this.timeout(40000);
 
-    let driver;
+  let driver;
 
-    before(async function () {
-        driver = await new Builder().forBrowser(Browser.CHROME).build();
-    });
+  before(async function () {
+    driver = await new Builder().forBrowser(Browser.CHROME).build();
+  });
 
-    after(async function () {
-        if (driver) {
-            await driver.quit();
-        }
-    });
+  after(async function () {
+    if (driver) {
+      await driver.quit();
+    }
+  });
 
-    it('doit accéder à la page des produits', async function () {
+  it("doit réaliser un parcours utilisateur complet", async function () {
+    await driver.get("http://localhost:8081");
+    await driver.executeScript("window.localStorage.clear();");
+    await driver.navigate().refresh();
 
-        // Ouvrir ShopNow
-        await driver.get('http://localhost:8081');
+    const homeLink = await driver.wait(
+      until.elementLocated(By.css('[data-testid="home-link"]')),
+      10000,
+    );
+    expect(await homeLink.isDisplayed()).to.equal(true);
+    expect(await driver.getTitle()).to.contain("ShopNow");
 
-        // Attendre le lien Produits
-        const productsLink = await driver.wait(
-            until.elementLocated(
-                By.css('[data-testid="products-link"]')
-            ),
-            10000
-        );
+    const loginLink = await driver.wait(
+      until.elementLocated(By.css('[data-testid="login-link"]')),
+      10000,
+    );
+    await loginLink.click();
 
-        // Vérifier qu'il est visible
-        await driver.wait(
-            until.elementIsVisible(productsLink),
-            10000
-        );
+    const loginForm = await driver.wait(
+      until.elementLocated(By.css('[data-testid="login-form"]')),
+      10000,
+    );
+    expect(await loginForm.isDisplayed()).to.equal(true);
+    await driver.findElement(By.css('[data-testid="login-submit"]')).click();
 
-        // Cliquer sur Produits
-        await productsLink.click();
+    await driver.wait(until.urlContains("products"), 10000);
 
-        // Attendre l'URL
-        await driver.wait(
-            until.urlContains('products'),
-            10000
-        );
+    const productsPage = await driver.wait(
+      until.elementLocated(By.css('[data-testid="products-page"]')),
+      10000,
+    );
+    expect(await productsPage.isDisplayed()).to.equal(true);
 
-        // Attendre la page Produits
-        const productsPage = await driver.wait(
-            until.elementLocated(
-                By.css('[data-testid="products-page"]')
-            ),
-            10000
-        );
+    const productLink = await driver.wait(
+      until.elementLocated(By.css('[data-testid="view-product-1"]')),
+      10000,
+    );
+    await productLink.click();
 
-        // Vérifier que la page est visible
-        await driver.wait(
-            until.elementIsVisible(productsPage),
-            10000
-        );
+    const productPage = await driver.wait(
+      until.elementLocated(By.css('[data-testid="product-page"]')),
+      10000,
+    );
+    expect(await productPage.isDisplayed()).to.equal(true);
+    expect(
+      await driver
+        .findElement(By.css('[data-testid="product-name"]'))
+        .getText(),
+    ).to.equal('Laptop Pro 14"');
 
-        // Assertions
-        expect(await productsPage.isDisplayed()).to.equal(true);
+    await driver.findElement(By.css('[data-testid="add-to-cart-1"]')).click();
+    await driver.switchTo().alert().accept();
 
-        const currentUrl = await driver.getCurrentUrl();
-        expect(currentUrl).to.include('products');
-    });
+    const cartLink = await driver.wait(
+      until.elementLocated(By.css('[data-testid="cart-link"]')),
+      10000,
+    );
+    await cartLink.click();
+
+    const cart = await driver.wait(
+      until.elementLocated(By.css('[data-testid="cart"]')),
+      10000,
+    );
+    expect(await cart.isDisplayed()).to.equal(true);
+    expect(
+      await driver.findElement(By.css('[data-testid="quantity-1"]')).getText(),
+    ).to.equal("1");
+
+    await driver.findElement(By.css('[data-testid="increase-1"]')).click();
+    const quantity = await driver.wait(
+      until.elementLocated(By.css('[data-testid="quantity-1"]')),
+      10000,
+    );
+    await driver.wait(until.elementTextIs(quantity, "2"), 10000);
+    expect(await quantity.getText()).to.equal("2");
+
+    const total = await driver
+      .findElement(By.css('[data-testid="cart-total"]'))
+      .getText();
+    expect(total.replace(/\s/g, "")).to.include("2599,98");
+
+    await driver.findElement(By.css('[data-testid="remove-item-1"]')).click();
+    const emptyCart = await driver.wait(
+      until.elementLocated(By.css('[data-testid="empty-cart"]')),
+      10000,
+    );
+    expect(await emptyCart.isDisplayed()).to.equal(true);
+
+    console.log(
+      "Parcours E2E réussi : connexion, produit, panier, quantité, total et suppression.",
+    );
+  });
 });
